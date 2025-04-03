@@ -157,7 +157,7 @@
     <img class="header-img" src="https://i.postimg.cc/tTz2N7Gs/Sony-LIV-Premium-1-Month-Subscription.png">
     <div class="content-wrapper">
       <div class="player-container">
-        <!-- This is where the JWPlayer will be loaded -->
+        <!-- JWPlayer container -->
         <div id="jwplayer"></div>
       </div>
       <div class="channel-section">
@@ -185,7 +185,7 @@
       document.body.classList.add('dark-mode');
       document.querySelector('.switch input').checked = true;
       loadChannels();
-      initializeJWPlayer();
+      initializeJWPlayer();  // Initialize JWPlayer after page load
     };
 
     function toggleDarkMode() {
