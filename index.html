@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sony Liv Created By Najid Haque</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      align-items: flex-start;
+      height: 100vh;
+      overflow: hidden;
+      transition: background-color 0.3s, color 0.3s;
+      flex-direction: column;
+      position: relative;
+    }
+    .dark-mode {
+      background-color: #121212;
+      color: white;
+    }
+    .header-img {
+      width: 100%;
+      max-width: 30%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+    .live-tv-player {
+      width: 100%;
+      height: 400px; /* Adjusted for JWPlayer */
+      border-radius: 20px;
+      padding-bottom: 5px;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto;
+    }
+    .channel-section {
+      background: #e1f5fe;
+      border-radius: 40px;
+      overflow: hidden;
+      width: 100%;
+      max-width: 500px;
+      height: 350px;
+      margin: 10 auto;
+      transition: background-color 0.3s;
+      position: relative;
+      margin-bottom: 50px; /* Ensure some space for the switch */
+      display: block;
+      margin: 0 auto;
+    }
+    .dark-mode .channel-section {
+      background: #333;
+    }
+    .channel-list {
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+    }
+    .channel-item {
+      display: flex;
+      align-items: center;
+      height: 100px;
+      width: 95%;
+      max-width: 500px;
+      padding: 20px;
+      border-radius: 40px;
+      margin-bottom: 10px;
+      background: #f3e5f5;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+      box-sizing: border-box;
+    }
+    .dark-mode .channel-item {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .channel-item:hover {
+      background-color: #81d4fa;
+      transform: scale(1.05);
+    }
+    .dark-mode .channel-item:hover {
+      background-color: #e92323;
+      transform: scale(1.05);
+    }
+    .channel-item img {
+      width: 120px;
+      height: 60px;
+      object-fit: contain;
+      margin-right: 20px;
+    }
+    .match-date {
+      font-weight: bold;
+      color: #43a047;
+    }
+    .non-live .match-date {
+      color: #e57373;
+    }
+    .switch {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+      width: 70px;
+      height: 40px;
+      background-color: #2196F3;
+      border-radius: 20px;
+      transition: background-color 0.3s;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .switch input {
+      display: none;
+    }
+    .slider {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      border-radius: 20px;
+      transition: background-color 0.3s;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 32px;
+      width: 30px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      border-radius: 50%;
+      transition: transform 0.3s;
+    }
+    input:checked + .slider {
+      background-color: #4CAF50;
+    }
+    input:checked + .slider:before {
+      transform: translateX(30px);
+    }
+    .slider.round {
+      border-radius: 20px;
+    }
+    .slider.round:before {
+      border-radius: 50%;
+    }
+
+    /* Responsive adjustments for larger screens */
+    @media (min-width: 768px) {
+      .channel-section {
+        max-width: 50%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img class="header-img" src="https://i.postimg.cc/tTz2N7Gs/Sony-LIV-Premium-1-Month-Subscription.png">
+    <div class="content-wrapper">
+      <div class="player-container">
+        <!-- Replace the existing video tag with JWPlayer container -->
+        <div id="jwplayer"></div>
+      </div>
+      <div class="channel-section">
+        <div class="channel-list" id="channel-list"></div>
+      </div>
+    </div>
+    <label class="switch">
+      <input type="checkbox" onchange="toggleDarkMode()" checked>
+      <span class="slider round"></span>
+    </label>
+  </div>
+
+  <!-- JWPlayer Script -->
+  <script src="https://content.jwplatform.com/libraries/LJ361JYj.js"></script>
+
+  <script>
+    let player;
+    const channelstreamInfo = {
+      streamUrl: "https://jf6.dunyapurkaraja.com:999/hls/starhindi.m3u8?md5=ROTYsy_9_eLYiMQtDtLHrQ&expires=1743668135",
+      authBearer: "",
+      streamPoster: ""
+    };
+
+    window.onload = () => {
+      document.body.classList.add('dark-mode');
+      document.querySelector('.switch input').checked = true;
+      loadChannels();
+    };
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+    }
+
+    function loadChannels() {
+      const channels = [
+        {
+          match_name: "Star Hindi Channel - Live Stream",
+          src: channelstreamInfo.streamPoster,
+          isLive: true,
+          video_url: channelstreamInfo.streamUrl
+        }
+      ];
+      renderChannels(channels);
+    }
+
+    function renderChannels(channels) {
+      const channelList = document.querySelector('.channel-list');
+      channelList.innerHTML = '';
+
+      channels.forEach((event, index) => {
+        const item = document.createElement('div');
+        item.className = 'channel-item';
+        const matchName = event.match_name.split(' - ');
+        const eventName = matchName[0];
+        const eventDate = matchName.length > 1 ? matchName[1] : '';
+
+        item.innerHTML = `
+          <img src="${event.src || 'https://via.placeholder.com/40'}" alt="${event.match_name}">
+          <span>${eventName} - <span class="match-date">${eventDate}</span></span>
+        `;
+        if (!event.isLive) {
+          item.classList.add('non-live');
+        }
+
+        item.onclick = () => {
+          if (event.isLive) {
+            playEvent(event.video_url);
+          }
+        };
+
+        channelList.appendChild(item);
+
+        if (index === 0 && event.isLive) {
+          playEvent(event.video_url);
+        }
+      });
+    }
+
+    function playEvent(url) {
+      if (!player) {
+        player = jwplayer("jwplayer").setup({
+          file: url,
+          width: "100%",
+          height: "400px",
+          autostart: true
+        });
+      } else {
+        player.load(url);
+        player.play();
+      }
+    }
+  </script>
+</body>
+  </html>
